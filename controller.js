@@ -4,6 +4,8 @@ export default class inputController {
         this.attach(target);
         document.addEventListener('keydown', this.#handleKeyDown.bind(this));
         document.addEventListener('keyup', this.#handleKeyUp.bind(this));
+        window.addEventListener('focus', this.#handleFocus.bind(this));
+        window.addEventListener('blur', this.#handleBlur.bind(this));
     }
 
     bindActions(actionsToBind){
@@ -42,11 +44,13 @@ export default class inputController {
     isActionActive(action){
         if(this.enabled) {
             for (let action_cur of this.#actions) {
-                if (action_cur.name === action) {
-                    for (let key_high of action_cur.keys) {
-                        for (let key_low of this.#pressed) {
-                            if (key_high === key_low) {
-                                return true;
+                if(action_cur.enabled){
+                    if (action_cur.name === action) {
+                        for (let key_high of action_cur.keys) {
+                            for (let key_low of this.#pressed) {
+                                if (key_high === key_low) {
+                                    return true;
+                                }
                             }
                         }
                     }
@@ -63,40 +67,54 @@ export default class inputController {
                 
             }
         }
-        console.log(condition);
         return condition;
     }
 
     #handleKeyDown(e) {
-        this.#pressed.add(e.key);
-        let action = '';
         for (let action_cur of this.#actions) {
             for (let key_high of action_cur.keys) {
-                if (e.key === key_high) {
-                    console.log(this.ACTION_ACTIVATED, action_cur.name);
+                if (e.key === key_high){
+                    for (let key_low of action_cur.keys) {
+                        if(this.isKeyPressed(key_low)) {
+                            return;
+                        };
+                    }
+                    this.#pressed.add(e.key);
+                    let event = new Event(this.ACTION_ACTIVATED + action_cur.name);
+                    this.#target.dispatchEvent(event);
                 }
             }
-        }
-        
+        }   
     }
 
     #handleKeyUp(e) {
-        let action = '';
         for (let action_cur of this.#actions) {
             for (let key_high of action_cur.keys) {
                 if (e.key === key_high) {
-                    console.log(this.ACTION_DEACTIVATED, action_cur.name);
+                    this.#pressed.delete(e.key);
+                    let event = new Event(this.ACTION_DEACTIVATED + action_cur.name);
+                    this.#target.dispatchEvent(event);
                 }
             }
-        }
-        this.#pressed.delete(e.key);
-        
+        }  
+    }
+
+    #handleFocus(e) {
+        this.focused = true;
+        this.enabled = true;
+        console.log('in');
+    }
+
+    #handleBlur(e) {
+        this.focused = false;
+        this.enabled = false;
+        console.log('out');
     }
 
     enabled = true;
     focused = true;
-    ACTION_ACTIVATED = "action activated";
-    ACTION_DEACTIVATED = "action deactivated";
+    ACTION_ACTIVATED = "input-controller:action-activated";
+    ACTION_DEACTIVATED = "input-controller:action-deactivated";
 
     #target;
     #actions;
