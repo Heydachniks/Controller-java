@@ -1,0 +1,71 @@
+body {
+    margin:0;
+}
+
+#activate_btn {
+    position: absolute;
+    top: 500px;
+    left: 0px;
+}
+
+#deactivate_btn {
+    position: absolute;
+    top: 500px;
+    left: 100px;
+}
+
+#attach_btn_blue {
+    position: absolute;
+    top: 580px;
+    left: 0px;
+}
+#attach_btn_red {
+    position: absolute;
+    top: 600px;
+    left: 0px;
+}
+#detach_btn {
+    position: absolute;
+    top: 600px;
+    left: 100px;
+}
+
+#jump_btn {
+    position: absolute;
+    top: 500px;
+    left: 200px;
+}
+
+#disable_left_btn {
+    position: absolute;
+    top: 700px;
+    left: 0px;
+}
+
+#enable_left_btn {
+    position: absolute;
+    top: 680px;
+    left: 0px;
+}
+
+#isPressed_left_btn {
+    position: absolute;
+    top: 800px;
+    left: 0px;
+}
+
+#bluebox {
+    background-color:#0000ff;
+    width: 200px;
+    height: 200px;
+    display: flex;
+    position: relative;
+}
+#redbox {
+    background-color: #ff0000;
+    width: 200px;
+    height: 200px;
+    display: flex;
+    position: relative;
+    left: 500;
+}
