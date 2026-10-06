@@ -75,11 +75,12 @@ export default class inputController {
             for (let key_high of action_cur.keys) {
                 if (e.key === key_high){
                     for (let key_low of action_cur.keys) {
-                        if(this.isKeyPressed(key_low)) {
+                        if(this.isKeyPressed(key_low) || action_cur.enabled === false) {
                             return;
                         };
                     }
                     this.#pressed.add(e.key);
+                    console.log(e.key + 'added');
                     let event = new Event(this.ACTION_ACTIVATED + action_cur.name);
                     this.#target.dispatchEvent(event);
                 }
@@ -91,12 +92,18 @@ export default class inputController {
         for (let action_cur of this.#actions) {
             for (let key_high of action_cur.keys) {
                 if (e.key === key_high) {
+                    for (let key_low of action_cur.keys) {
+                        if(this.isKeyPressed(key_low) && key_low != e.key) {
+                            return;
+                        };
+                    }
                     this.#pressed.delete(e.key);
+                    console.log(e.key + 'deleted');
                     let event = new Event(this.ACTION_DEACTIVATED + action_cur.name);
                     this.#target.dispatchEvent(event);
                 }
             }
-        }  
+        }
     }
 
     #handleFocus(e) {
