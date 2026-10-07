@@ -1,5 +1,3 @@
-import { Actions } from "./actions.js";
-
 export default class inputController {
     constructor(actionsToBind, target) {
         this.bindActions(actionsToBind);

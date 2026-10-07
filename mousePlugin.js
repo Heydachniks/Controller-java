@@ -6,13 +6,13 @@ export default class Mouse {
     }
 
     attach() {
-        document.addEventListener('click', this.#handleKeyDown.bind(this));
-        document.addEventListener('mousemove', this.#handleKeyUp.bind(this));
+        document.addEventListener('mouseup', this.#handleKeyDown.bind(this));
+        document.addEventListener('mousedown', this.#handleKeyUp.bind(this));
     }
 
     detach() {
-        document.removeEventListener('mouseclick', this.#handleKeyDown.bind(this));
-        document.removeEventListener('mousemove', this.#handleKeyUp.bind(this));
+        document.removeEventListener('mouseup', this.#handleKeyDown.bind(this));
+        document.removeEventListener('mousedown', this.#handleKeyUp.bind(this));
     }
 
     isKeyPressed(key){
@@ -20,27 +20,28 @@ export default class Mouse {
     }
 
     checkActionUsed(action) {
-        if (input_controller.actions.hasOwn(action)) {
-            for (let key of input_controller.actions[action].keys) {
+        if (allActions.hasOwn(action)) {
+            for (let key of allActions[action].keys) {
                 if(this.isKeyPressed(key)) {
                     return true;
                 }
             }
         }
+        return false;
     }
 
     #handleKeyDown(e) {
-        for (const [name, prop] of Object.entries(input_controller.actions)) {
-            if (prop.keys.includes(e.key)) {
-                for (let key_low of prop.keys) {
-                    if(this.isKeyPressed(key_low) && key_low != e.key) {
-                        return;
-                    };
-                }
-                this.pressed.add(e.key);
-                console.log(e.key + 'added');
-                if (!input_controller.checkPluginsActivityPressed(this, name)) {
-                    let event = new CustomEvent(input_controller.ACTION_ACTIVATED, {detail: {name: name}});
+        for (const [activitylist, obj] of Object.entries(allActions)) {
+            for (const [name, prop] of Object.entries(obj)) {
+                if (prop.keys.includes(e.key)) {
+                    for (let key_low of prop.keys) {
+                        if(this.isKeyPressed(key_low) && key_low != e.key) {
+                            return;
+                        };
+                    }
+                    this.pressed.add(e.key);
+                    console.log(e.key + 'added');
+                    let event = new CustomEvent(inputController.PLUGIN_PRESS, {detail: {plugin: this, action: name}});
                     document.dispatchEvent(event);
                 }
             }
@@ -48,17 +49,17 @@ export default class Mouse {
     } 
 
     #handleKeyUp(e) {
-        for (const [name, prop] of Object.entries(input_controller.actions)) {
-            if (prop.keys.includes(e.key)) {
-                for (let key_low of prop.keys) {
-                    if(this.isKeyPressed(key_low) && key_low != e.key) {
-                        return;
-                    };
-                }
-                this.pressed.delete(e.key);
-                console.log(e.key + 'deleted');
-                if (!input_controller.checkPluginsActivityPressed(this, name)) {
-                    let event = new CustomEvent(input_controller.ACTION_DEACTIVATED, {detail: {name: name}});
+        for (const [activitylist, obj] of Object.entries(allActions)) {
+            for (const [name, prop] of Object.entries(obj)) {
+                if (prop.keys.includes(e.key)) {
+                    for (let key_low of prop.keys) {
+                        if(this.isKeyPressed(key_low) && key_low != e.key) {
+                            return;
+                        };
+                    }
+                    this.pressed.delete(e.key);
+                    console.log(e.key + 'deleted');
+                    let event = new CustomEvent(inputController.PLUGIN_RELEASE, {detail: {plugin: this, action: name}});
                     document.dispatchEvent(event);
                 }
             }

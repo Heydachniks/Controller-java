@@ -1,5 +1,5 @@
 import inputController from "./controller.js";
-import { Actions } from "./actions.js";
+import * as allActions from "./actions.js";
 
 export default class Keyboard {
     constructor() {
@@ -21,8 +21,8 @@ export default class Keyboard {
     }
 
     checkActionUsed(action) {
-        if (Actions.hasOwn(action)) {
-            for (let key of Actions[action].keys) {
+        if (allActions.hasOwn(action)) {
+            for (let key of allActions[action].keys) {
                 if(this.isKeyPressed(key)) {
                     return true;
                 }
@@ -32,33 +32,37 @@ export default class Keyboard {
     }
 
     #handleKeyDown(e) {
-        for (const [name, prop] of Object.entries(Actions)) {
-            if (prop.keys.includes(e.key)) {
-                for (let key_low of prop.keys) {
-                    if(this.isKeyPressed(key_low) && key_low != e.key) {
-                        return;
-                    };
+        for (const [activitylist, obj] of Object.entries(allActions)) {
+            for (const [name, prop] of Object.entries(obj)) {
+                if (prop.keys.includes(e.key)) {
+                    for (let key_low of prop.keys) {
+                        if(this.isKeyPressed(key_low) && key_low != e.key) {
+                            return;
+                        };
+                    }
+                    this.pressed.add(e.key);
+                    console.log(e.key + 'added');
+                    let event = new CustomEvent(inputController.PLUGIN_PRESS, {detail: {plugin: this, action: name}});
+                    document.dispatchEvent(event);
                 }
-                this.pressed.add(e.key);
-                console.log(e.key + 'added');
-                let event = new CustomEvent(inputController.PLUGIN_PRESS, {detail: {plugin: this, action: name}});
-                document.dispatchEvent(event);
             }
         }
     } 
 
     #handleKeyUp(e) {
-        for (const [name, prop] of Object.entries(Actions)) {
-            if (prop.keys.includes(e.key)) {
-                for (let key_low of prop.keys) {
-                    if(this.isKeyPressed(key_low) && key_low != e.key) {
-                        return;
-                    };
+        for (const [activitylist, obj] of Object.entries(allActions)) {
+            for (const [name, prop] of Object.entries(obj)) {
+                if (prop.keys.includes(e.key)) {
+                    for (let key_low of prop.keys) {
+                        if(this.isKeyPressed(key_low) && key_low != e.key) {
+                            return;
+                        };
+                    }
+                    this.pressed.delete(e.key);
+                    console.log(e.key + 'deleted');
+                    let event = new CustomEvent(inputController.PLUGIN_RELEASE, {detail: {plugin: this, action: name}});
+                    document.dispatchEvent(event);
                 }
-                this.pressed.delete(e.key);
-                console.log(e.key + 'deleted');
-                let event = new CustomEvent(inputController.PLUGIN_RELEASE, {detail: {plugin: this, action: name}});
-                document.dispatchEvent(event);
             }
         }
     }
