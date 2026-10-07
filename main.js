@@ -1,20 +1,6 @@
 import inputController from "./controller.js"
-
-class Action{
-    constructor (name, keys, enabled){
-        this.name = name, this.keys = keys, this.enabled = enabled;
-    }
-    
-    name = "";
-    keys = [];
-    enabled = false;
-};
-
-let actions = new Set([new Action("left", ['a', 'ArrowLeft'], true),
-                new Action("right", ['d', 'ArrowRight'], true), 
-                new Action("down", ['s', 'ArrowDown'], true), 
-                new Action("up", ['w', 'ArrowUp'], true)]
-                )
+import Keyboard from "./keyboardPlugin.js";
+import { Actions, newActions } from "./actions.js";
 
 const bluebox = document.getElementById("bluebox");
 const redbox = document.getElementById("redbox");
@@ -27,7 +13,8 @@ const jump_btn = document.getElementById("jump_btn");
 const disable_left_btn = document.getElementById("disable_left_btn");
 const enable_left_btn = document.getElementById("enable_left_btn");
 const isPressed_left_btn = document.getElementById("isPressed_left_btn");
-const controller = new inputController(actions, bluebox);
+const controller = new inputController(Actions, bluebox);
+controller.attach_plugin(new Keyboard);
 let target = bluebox;
 let y = 0;
 let x = 0;
@@ -40,26 +27,27 @@ deactivate_btn.onclick = function(){controller.enabled = false};
 attach_btn_blue.onclick = function(){target = bluebox; controller.attach(target)};
 attach_btn_red.onclick = function(){target = redbox; controller.attach(target)};
 detach_btn.onclick = function(){controller.detach()};
-jump_btn.onclick = function(){actions.add(new Action("jump", [" "], true)); controller.bindActions(actions)};
+jump_btn.onclick = function(){controller.bindActions(newActions)};
 disable_left_btn.onclick = function(){controller.disableAction("left")};
 enable_left_btn.onclick = function(){controller.enableAction("left")};
 isPressed_left_btn.onclick = function(){return(controller.isKeyPressed('ArrowLeft'))};
 
-document.addEventListener("keydown", event => {
+document.addEventListener(controller.ACTION_ACTIVATED, event => { 
     if(controller.enabled) {
-        if (controller.isActionActive('left')) {
+        if (event.detail.name === 'left') {
+            console.log('left found');
             x -= movement;
         }
-        if (controller.isActionActive('right')) {
+        if (event.detail.name === 'right') {
             x += movement;
         }
-        if (controller.isActionActive('up')) {
+        if (event.detail.name === 'up') {
             y -= movement;
         }
-        if (controller.isActionActive('down')) {
+        if (event.detail.name === 'down') {
             y += movement;
         }
-        if (controller.isActionActive('jump')) {
+        if (event.detail.name === 'jump') {
             y = y - movement - 50;
         }
         target.style.top = `${y}px`;
