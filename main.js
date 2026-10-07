@@ -1,4 +1,4 @@
-import inputController from "./controller.js"
+import { input_controller } from "./controller.js"
 import Keyboard from "./keyboardPlugin.js";
 import { Actions, newActions } from "./actions.js";
 
@@ -13,7 +13,7 @@ const jump_btn = document.getElementById("jump_btn");
 const disable_left_btn = document.getElementById("disable_left_btn");
 const enable_left_btn = document.getElementById("enable_left_btn");
 const isPressed_left_btn = document.getElementById("isPressed_left_btn");
-const controller = new inputController(Actions, bluebox);
+const controller = input_controller;
 controller.attach_plugin(new Keyboard);
 let target = bluebox;
 let y = 0;

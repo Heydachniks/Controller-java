@@ -1,4 +1,6 @@
-export default class inputController {
+import { Actions } from "./actions.js";
+
+class inputController {
     constructor(actionsToBind, target) {
         this.bindActions(actionsToBind);
         this.attach(target);
@@ -85,3 +87,5 @@ export default class inputController {
     target;
     actions = {};
 }
+
+export const input_controller = new inputController(Actions);
