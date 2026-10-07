@@ -18,38 +18,48 @@ export default class Keyboard {
     }
 
     isKeyPressed(key){
-        return (this.#pressed.has(key));
+        return (this.pressed.has(key));
+    }
+
+    checkActionUsed(action) {
+        if (this.#controller.actions.hasOwn(action)) {
+            for (let key of this.#controller.actions[action].keys) {
+                if(this.isKeyPressed(key)) {
+                    return true;
+                }
+            }
+        }
     }
 
     #handleKeyDown(e) {
         for (const [name, prop] of Object.entries(this.#controller.actions)) {
-            for (let key_high of prop.keys) {
-                if (e.key === key_high){
-                    for (let key_low of prop.keys) {
-                        if((this.isKeyPressed(key_low) &&  key_low != e.key) || prop.enabled === false) {
-                            return;
-                        };
-                    }
-                    this.#pressed.add(e.key);
-                    console.log(e.key + 'added');
+            if (prop.keys.includes(e.key)) {
+                for (let key_low of prop.keys) {
+                    if(this.isKeyPressed(key_low) && key_low != e.key) {
+                        return;
+                    };
+                }
+                this.pressed.add(e.key);
+                console.log(e.key + 'added');
+                if (!this.#controller.checkPluginsActivityPressed(this, name)) {
                     let event = new CustomEvent(this.#controller.ACTION_ACTIVATED, {detail: {name: name}});
                     document.dispatchEvent(event);
                 }
             }
-        }   
-    }
+        }
+    } 
 
     #handleKeyUp(e) {
         for (const [name, prop] of Object.entries(this.#controller.actions)) {
-            for (let key_high of prop.keys) {
-                if (e.key === key_high) {
-                    for (let key_low of prop.keys) {
-                        if(this.isKeyPressed(key_low) && key_low != e.key) {
-                            return;
-                        };
-                    }
-                    this.#pressed.delete(e.key);
-                    console.log(e.key + 'deleted');
+            if (prop.keys.includes(e.key)) {
+                for (let key_low of prop.keys) {
+                    if(this.isKeyPressed(key_low) && key_low != e.key) {
+                        return;
+                    };
+                }
+                this.pressed.delete(e.key);
+                console.log(e.key + 'deleted');
+                if (!this.#controller.checkPluginsActivityPressed(this, name)) {
                     let event = new CustomEvent(this.#controller.ACTION_DEACTIVATED, {detail: {name: name}});
                     document.dispatchEvent(event);
                 }
@@ -57,6 +67,7 @@ export default class Keyboard {
         }
     }
 
+
     #controller;
-    #pressed = new Set;
+    pressed = new Set;
 }

@@ -55,6 +55,15 @@ export default class inputController {
         }
     }
 
+    checkPluginsActivityPressed(plugin, action) {
+        for (let plugin_dif of this.plugins) {
+            if (plugin_dif != plugin && plugin_dif.checkActionUsed(action)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     #handleFocus(e) {
         this.focused = true;
         this.enabled = true;

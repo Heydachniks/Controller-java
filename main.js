@@ -35,7 +35,6 @@ isPressed_left_btn.onclick = function(){return(controller.isKeyPressed('ArrowLef
 document.addEventListener(controller.ACTION_ACTIVATED, event => { 
     if(controller.enabled) {
         if (event.detail.name === 'left') {
-            console.log('left found');
             x -= movement;
         }
         if (event.detail.name === 'right') {
