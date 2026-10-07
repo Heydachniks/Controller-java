@@ -21,7 +21,7 @@ export default class Keyboard {
     }
 
     checkActionUsed(action) {
-        if (allActions.hasOwn(action)) {
+        if (allActions.hasOwnProperty(action)) {
             for (let key of allActions[action].keys) {
                 if(this.isKeyPressed(key)) {
                     return true;

@@ -7,8 +7,9 @@
         <title>Controller</title>
     </head>
     <body>
-        <div id = bluebox> </div>
-        <div id = redbox> </div>
+        <div id = 'blue' class = 'ball'> </div>
+        <div id = 'red' class = 'ball'> </div>
+        <div id = platform> </div>
         <button id="deactivate_btn">Deactivate</button>
         <button id="activate_btn">Activate</button>
         <button id="attach_btn_blue">Attach blue</button>
@@ -17,7 +18,12 @@
         <button id="jump_btn">Bind Jump</button>
         <button id="disable_left_btn">Disable left</button>
         <button id="enable_left_btn">Enable left</button>
-        <button id="isPressed_left_btn">is left pressed</button>
-        <script type = "module" src = "./main.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/gsap.min.js" defer></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/CustomEase.min.js" defer></script>
+        <!-- CustomBounce requires CustomEase -->
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/CustomBounce.min.js" defer></script>
+
+        <script type = "module" src = "./main.js" defer></script>
     </body>
 </html>

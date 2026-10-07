@@ -21,13 +21,13 @@ export default class inputController {
     }
 
     enableAction(actionName){
-        if (Actions.hasOwn(actionName)) {
-            Actions[actionName].enabled = true;
+        if (this.actions.hasOwnProperty(actionName)) {
+            this.actions[actionName].enabled = true;
         }
     }
 
     disableAction(actionName){
-        if (this.actions.hasOwn(actionName)) {
+        if (this.actions.hasOwnProperty(actionName)) {
             this.actions[actionName].enabled = false;
         }
     }
@@ -51,7 +51,7 @@ export default class inputController {
 
     isActionActive(action){
         if(this.enabled) {
-            if (this.actions.hasOwn(action)) {
+            if (this.actions.hasOwnProperty(action)) {
                 return (this.actions[action].enabled);
             }
         }
@@ -60,7 +60,6 @@ export default class inputController {
     checkPluginsActivityPressed(plugin, action) {
         for (let plugin_dif of this.plugins) {
             if (plugin_dif != plugin && plugin_dif.checkActionUsed(action)) {
-                console.log('check true');
                 return true;
             }
         }
@@ -68,18 +67,18 @@ export default class inputController {
     }
 
     #handlePluginPress(e) {
-        console.log('press handled');
         if (!this.checkPluginsActivityPressed(e.detail.plugin, e.detail.action)) {
-                    let event = new CustomEvent(this.ACTION_ACTIVATED, {detail: {name: e.detail.action}});
-                    console.log('action event dispathed');
-                    document.dispatchEvent(event);
-                }
+            if (this.actions.hasOwnProperty(e.detail.action)) {
+            const event = new CustomEvent(this.ACTION_ACTIVATED, {detail: {name: e.detail.action}});
+            document.dispatchEvent(event);
+            }
+        }
     } 
     #handlePluginRelease(e) {
         if (!this.checkPluginsActivityPressed(e.detail.plugin, e.detail.action)) {
-                    let event = new CustomEvent(this.ACTION_DEACTIVATED, {detail: {name: e.detail.action}});
-                    document.dispatchEvent(event);
-                }
+            const event = new CustomEvent(this.ACTION_DEACTIVATED, {detail: {name: e.detail.action}});
+            document.dispatchEvent(event);
+        }
     } 
 
     #handleFocus(e) {

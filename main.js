@@ -2,8 +2,8 @@ import inputController from "./controller.js"
 import Keyboard from "./keyboardPlugin.js";
 import { Actions, newActions } from "./actions.js";
 
-const bluebox = document.getElementById("bluebox");
-const redbox = document.getElementById("redbox");
+const blue = document.getElementById("blue");
+const red = document.getElementById("red");
 const activate_btn = document.getElementById("activate_btn");
 const deactivate_btn = document.getElementById("deactivate_btn");
 const attach_btn_blue = document.getElementById("attach_btn_blue");
@@ -12,27 +12,25 @@ const detach_btn = document.getElementById("detach_btn");
 const jump_btn = document.getElementById("jump_btn");
 const disable_left_btn = document.getElementById("disable_left_btn");
 const enable_left_btn = document.getElementById("enable_left_btn");
-const isPressed_left_btn = document.getElementById("isPressed_left_btn");
-const controller = new inputController(Actions, bluebox);
+const controller = new inputController(Actions, blue);
+const platform = document.getElementById("platform");
 controller.attach_plugin(new Keyboard);
-let target = bluebox;
-let y = 0;
-let x = 0;
+let target = blue;
+let x = parseInt(window.getComputedStyle(target).left, 10);
 const movement = 10;
-
-let holded_down = false;
 
 activate_btn.onclick = function(){controller.enabled = true};
 deactivate_btn.onclick = function(){controller.enabled = false};
-attach_btn_blue.onclick = function(){target = bluebox; controller.attach(target)};
-attach_btn_red.onclick = function(){target = redbox; controller.attach(target)};
+attach_btn_blue.onclick = function(){target = blue; controller.attach(target)};
+attach_btn_red.onclick = function(){target = red; controller.attach(target)};
 detach_btn.onclick = function(){controller.detach()};
 jump_btn.onclick = function(){controller.bindActions(newActions)};
 disable_left_btn.onclick = function(){controller.disableAction("left")};
 enable_left_btn.onclick = function(){controller.enableAction("left")};
-isPressed_left_btn.onclick = function(){return(controller.isKeyPressed('ArrowLeft'))};
 
 document.addEventListener(controller.ACTION_ACTIVATED, event => { 
+    x = parseInt(window.getComputedStyle(target).left, 10);
+
     if(controller.enabled) {
         if (event.detail.name === 'left') {
             x -= movement;
@@ -40,16 +38,15 @@ document.addEventListener(controller.ACTION_ACTIVATED, event => {
         if (event.detail.name === 'right') {
             x += movement;
         }
-        if (event.detail.name === 'up') {
-            y -= movement;
-        }
-        if (event.detail.name === 'down') {
-            y += movement;
-        }
         if (event.detail.name === 'jump') {
-            y = y - movement - 50;
+            gsap.to(target, { duration: 1, y: '-100%', ease: 'power2' });
+
+            CustomBounce.create("myBounce", {strength:0.7, squash:3});
+            let tl = gsap.timeline({delay:1});
+            tl.to(target, {y: (window.getComputedStyle(target).top, 10), duration: 3, ease:"myBounce"})
+                .to(target, {scaleY:0.5, duration: 3, scaleX:1.3, ease:"myBounce-squash", transformOrigin:"bottom"}, 0)
         }
-        target.style.top = `${y}px`;
         target.style.left = `${x}px`;
     }
+    
 });
