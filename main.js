@@ -43,7 +43,7 @@ document.addEventListener(controller.ACTION_ACTIVATED, event => {
 
             CustomBounce.create("myBounce", {strength:0.7, squash:3});
             let tl = gsap.timeline({delay:1});
-            tl.to(target, {y: (window.getComputedStyle(target).top, 10), duration: 3, ease:"myBounce"})
+            tl.to(target, {y: 0, duration: 3, ease:"myBounce"})
                 .to(target, {scaleY:0.5, duration: 3, scaleX:1.3, ease:"myBounce-squash", transformOrigin:"bottom"}, 0)
         }
         target.style.left = `${x}px`;
