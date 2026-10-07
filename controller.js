@@ -1,11 +1,13 @@
 import { Actions } from "./actions.js";
 
-class inputController {
+export default class inputController {
     constructor(actionsToBind, target) {
         this.bindActions(actionsToBind);
         this.attach(target);
         window.addEventListener('focus', this.#handleFocus.bind(this));
         window.addEventListener('blur', this.#handleBlur.bind(this));
+        document.addEventListener(inputController.PLUGIN_PRESS, this.#handlePluginPress.bind(this));
+        document.addEventListener(inputController.PLUGIN_RELEASE, this.#handlePluginRelease.bind(this));
     }
 
     bindActions(actionsToBind){
@@ -21,8 +23,8 @@ class inputController {
     }
 
     enableAction(actionName){
-        if (this.actions.hasOwn(actionName)) {
-            this.actions[actionName].enabled = true;
+        if (Actions.hasOwn(actionName)) {
+            Actions[actionName].enabled = true;
         }
     }
 
@@ -60,11 +62,27 @@ class inputController {
     checkPluginsActivityPressed(plugin, action) {
         for (let plugin_dif of this.plugins) {
             if (plugin_dif != plugin && plugin_dif.checkActionUsed(action)) {
+                console.log('check true');
                 return true;
             }
         }
         return false;
     }
+
+    #handlePluginPress(e) {
+        console.log('press handled');
+        if (!this.checkPluginsActivityPressed(e.detail.plugin, e.detail.action)) {
+                    let event = new CustomEvent(this.ACTION_ACTIVATED, {detail: {name: e.detail.action}});
+                    console.log('action event dispathed');
+                    document.dispatchEvent(event);
+                }
+    } 
+    #handlePluginRelease(e) {
+        if (!this.checkPluginsActivityPressed(e.detail.plugin, e.detail.action)) {
+                    let event = new CustomEvent(this.ACTION_DEACTIVATED, {detail: {name: e.detail.action}});
+                    document.dispatchEvent(event);
+                }
+    } 
 
     #handleFocus(e) {
         this.focused = true;
@@ -82,10 +100,10 @@ class inputController {
     focused = true;
     ACTION_ACTIVATED = "input-controller:action-activated";
     ACTION_DEACTIVATED = "input-controller:action-deactivated";
+    PLUGIN_PRESS = "input-controller:plugin-press";
+    PLUGIN_RELEASE = "input-controller:plugin-release";
 
     plugins = new Set;
     target;
     actions = {};
 }
-
-export const input_controller = new inputController(Actions);

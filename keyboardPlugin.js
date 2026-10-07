@@ -1,4 +1,5 @@
-import { input_controller } from "./controller.js";
+import inputController from "./controller.js";
+import { Actions } from "./actions.js";
 
 export default class Keyboard {
     constructor() {
@@ -20,17 +21,18 @@ export default class Keyboard {
     }
 
     checkActionUsed(action) {
-        if (input_controller.actions.hasOwn(action)) {
-            for (let key of input_controller.actions[action].keys) {
+        if (Actions.hasOwn(action)) {
+            for (let key of Actions[action].keys) {
                 if(this.isKeyPressed(key)) {
                     return true;
                 }
             }
         }
+        return false;
     }
 
     #handleKeyDown(e) {
-        for (const [name, prop] of Object.entries(input_controller.actions)) {
+        for (const [name, prop] of Object.entries(Actions)) {
             if (prop.keys.includes(e.key)) {
                 for (let key_low of prop.keys) {
                     if(this.isKeyPressed(key_low) && key_low != e.key) {
@@ -39,16 +41,14 @@ export default class Keyboard {
                 }
                 this.pressed.add(e.key);
                 console.log(e.key + 'added');
-                if (!input_controller.checkPluginsActivityPressed(this, name)) {
-                    let event = new CustomEvent(input_controller.ACTION_ACTIVATED, {detail: {name: name}});
-                    document.dispatchEvent(event);
-                }
+                let event = new CustomEvent(inputController.PLUGIN_PRESS, {detail: {plugin: this, action: name}});
+                document.dispatchEvent(event);
             }
         }
     } 
 
     #handleKeyUp(e) {
-        for (const [name, prop] of Object.entries(input_controller.actions)) {
+        for (const [name, prop] of Object.entries(Actions)) {
             if (prop.keys.includes(e.key)) {
                 for (let key_low of prop.keys) {
                     if(this.isKeyPressed(key_low) && key_low != e.key) {
@@ -57,10 +57,8 @@ export default class Keyboard {
                 }
                 this.pressed.delete(e.key);
                 console.log(e.key + 'deleted');
-                if (!input_controller.checkPluginsActivityPressed(this, name)) {
-                    let event = new CustomEvent(input_controller.ACTION_DEACTIVATED, {detail: {name: name}});
-                    document.dispatchEvent(event);
-                }
+                let event = new CustomEvent(inputController.PLUGIN_RELEASE, {detail: {plugin: this, action: name}});
+                document.dispatchEvent(event);
             }
         }
     }
