@@ -19,6 +19,9 @@ let target = blue;
 let x = parseInt(window.getComputedStyle(target).left, 10);
 const movement = 10;
 
+CustomBounce.create("myBounce", {strength:0.7, squash:3});
+let tl;
+
 activate_btn.onclick = function(){controller.enabled = true};
 deactivate_btn.onclick = function(){controller.enabled = false};
 attach_btn_blue.onclick = function(){target = blue; controller.attach(target)};
@@ -39,12 +42,18 @@ document.addEventListener(controller.ACTION_ACTIVATED, event => {
             x += movement;
         }
         if (event.detail.name === 'jump') {
-            gsap.to(target, { duration: 1, y: '-100%', ease: 'power2' });
-
-            CustomBounce.create("myBounce", {strength:0.7, squash:3});
-            let tl = gsap.timeline({delay:1});
-            tl.to(target, {y: 0, duration: 3, ease:"myBounce"})
-                .to(target, {scaleY:0.5, duration: 3, scaleX:1.3, ease:"myBounce-squash", transformOrigin:"bottom"}, 0)
+            if (tl && tl.isActive()) {
+                return;
+            }
+            tl = gsap.timeline();
+            tl.to(target, { duration: 1, y: '-200%', ease: 'power2' })
+                .to(target, { y: 0, duration: 1, ease: 'power2.in' })
+                .to(target, { scaleY: 1.5, scaleX: 0.7, duration: 1, ease: 'power2.in' }, '<')
+                .to(target, { scaleY: 0.5, scaleX: 1.7, duration: 0.2, transformOrigin: "bottom", ease: 'power2.out' })
+                .to(target, { scaleY: 1, scaleX: 1, duration: 0.1, transformOrigin: "bottom", ease: 'power2.out' })
+                .to(target, { duration: 1, y: '-100%', ease: 'power2' })
+                .to(target, {y: 0, duration: 3, ease:"myBounce"})
+                .to(target, {scaleY:0.5, duration: 3, scaleX:1.3, ease:"myBounce-squash", transformOrigin:"bottom"}, '<')
         }
         target.style.left = `${x}px`;
     }
