@@ -46,7 +46,9 @@ document.addEventListener(controller.ACTION_ACTIVATED, event => {
                 return;
             }
             tl = gsap.timeline();
-            tl.to(target, { duration: 1, y: '-200%', ease: 'power2' })
+            tl.to(target, { duration: 0.2, scaleY: 0.5, scaleX: 1.7, duration: 0.2, transformOrigin: "bottom", ease: 'power2.out'})
+                .to(target, { scaleY: 1, scaleX: 1, duration: 0.1, transformOrigin: "bottom", ease: 'power2.out'})
+                .to(target, { duration: 1, y: '-200%', ease: 'power2' }, '<')
                 .to(target, { y: 0, duration: 1, ease: 'power2.in' })
                 .to(target, { scaleY: 1.5, scaleX: 0.7, duration: 1, ease: 'power2.in' }, '<')
                 .to(target, { scaleY: 0.5, scaleX: 1.7, duration: 0.2, transformOrigin: "bottom", ease: 'power2.out' })
